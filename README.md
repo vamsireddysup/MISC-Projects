@@ -1,57 +1,52 @@
-# Miscellaneous AI-Generated Python Utilities
+# Miscellaneous Python Projects
 
-These repository includes some miscellaneous projects generated using GPT/AI for temporary use.
+A collection of miscellaneous Python utility scripts and Jupyter notebooks for various automation tasks.
 
----
+## Repository Structure
 
-## [1. Truth Table Generation Using Python](#truth-table-generation-using-python)
-
-### Description
-Generates a truth table for user-defined Boolean expressions with multiple inputs and outputs, using the `ttg` and `pandas` libraries. It also supports output as an Excel file.
-
-### Features
-- Define custom logic expressions
-- Auto-generate complete truth tables
-- Save as Excel
-- Sorted rows for clear interpretation
-
-### Sample Expressions
-```python
-variables = ['in', 'Q11', 'Q12', 'Q21', 'Q22']
-expressions = [
-    'in and Q12',
-    'in or Q12',
-    'in and Q22',
-    '(Q22 and (in or Q21))',
-    '(in or Q12) xor ((Q22 and (in or Q21)))'
-]
+```
+misc-projects/
+├── notebooks/
+│   ├── truth_table_generator.ipynb   # Generates truth tables for Boolean expressions
+│   └── img_to_pdf_converter.ipynb    # Converts image files to PDF format
+└── README.md
 ```
 
-### Output
-- `truth_table.xlsx` — Contains full truth table
-- `state_diagram.png` — Visual transition map from a given state transition table using `Graphviz`
+## Projects
 
----
+### Truth Table Generator
+Generates truth tables for Boolean logic expressions using Python. Useful for digital logic analysis and verification.
 
-## [2. Image to PDF Conversion Using Python](#image-to-pdf-conversion-using-python)
+**Key features:**
+- Parses Boolean expressions
+- Generates complete truth tables
+- Displays formatted output
 
-### Description
-Recursively converts images in subfolders into individual PDF files using `PIL`. Each subfolder is turned into a separate PDF file.
+### Image to PDF Converter
+Converts image files (JPG, PNG) to PDF format programmatically using Python.
 
-### Features
-- Supports `.jpg`, `.jpeg`, `.png`, `.bmp`, `.tiff`, `.gif`
-- Maintains subfolder structure
-- Converts images to high-quality PDFs
-- Output PDFs are named after their respective subfolders
+**Key features:**
+- Batch image conversion
+- PDF output generation
+- Simple CLI interface
 
-### Usage
-Set the root and output folders in the script:
-```python
-root_images_folder = "/path/to/images"
-output_pdfs_folder = "/path/to/save/pdfs"
+## Setup
+
+```bash
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # Linux/Mac
+# or: venv\Scripts\activate  # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Launch Jupyter
+jupyter notebook notebooks/
 ```
 
-### Output
-- A PDF file for each image subfolder under the specified directory.
+## Dependencies
 
----
+- `jupyter` — notebook environment
+- `img2pdf` — image to PDF conversion
+- `pandas` / `itertools` — truth table generation
