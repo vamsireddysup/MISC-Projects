@@ -1,0 +1,363 @@
+/* Oregon DMV Practice — styles */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #1b6b48;
+  --green-dark: #12503a;
+  --blue: #274c77;
+  --accent: #e8a33d;
+  --bg: #f4f6f3;
+  --card: #ffffff;
+  --text: #21302a;
+  --muted: #64756d;
+  --border: #dde4de;
+  --correct: #2e9e5b;
+  --correct-bg: #e6f6ec;
+  --wrong: #d64545;
+  --wrong-bg: #fdeaea;
+  --shadow: 0 2px 10px rgba(20, 40, 30, .08);
+  --radius: 14px;
+}
+[data-theme="dark"] {
+  --green: #4dbd8a;
+  --green-dark: #2f8f68;
+  --blue: #7fa8d9;
+  --accent: #eab35c;
+  --bg: #131a17;
+  --card: #1d2621;
+  --text: #e7efe9;
+  --muted: #93a49b;
+  --border: #33403a;
+  --correct: #4dbd8a;
+  --correct-bg: #1c3529;
+  --wrong: #e2716f;
+  --wrong-bg: #3a2323;
+  --shadow: 0 2px 12px rgba(0,0,0,.35);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+  transition: background .3s, color .3s;
+}
+button { font-family: inherit; cursor: pointer; }
+
+/* ---------- header ---------- */
+header {
+  background: linear-gradient(120deg, var(--green-dark), var(--green));
+  color: #fff;
+  padding: .8rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: var(--shadow);
+}
+header .logo { font-size: 1.7rem; }
+header h1 { font-size: 1.12rem; font-weight: 700; letter-spacing: .2px; }
+header h1 small { display: block; font-size: .72rem; font-weight: 400; opacity: .85; }
+header nav { margin-left: auto; display: flex; gap: .3rem; flex-wrap: wrap; }
+header nav button, #themeToggle {
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.25);
+  color: #fff;
+  padding: .42rem .8rem;
+  border-radius: 999px;
+  font-size: .85rem;
+  transition: background .2s, transform .1s;
+}
+header nav button:hover, #themeToggle:hover { background: rgba(255,255,255,.28); }
+header nav button.active { background: #fff; color: var(--green-dark); font-weight: 700; }
+
+/* ---------- disclaimer banner ---------- */
+.banner {
+  background: var(--accent);
+  color: #3a2a08;
+  text-align: center;
+  padding: .45rem .9rem;
+  font-size: .82rem;
+  font-weight: 500;
+}
+.banner a { color: inherit; }
+
+main { max-width: 980px; margin: 0 auto; padding: 1.4rem 1rem 4rem; }
+
+.view { display: none; animation: fadeUp .35s ease; }
+.view.active { display: block; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+/* ---------- hero ---------- */
+.hero {
+  text-align: center;
+  padding: 2.2rem 1rem 1.6rem;
+}
+.hero .road {
+  font-size: 3.2rem;
+  animation: drive 3s ease-in-out infinite alternate;
+  display: inline-block;
+}
+@keyframes drive { from { transform: translateX(-14px); } to { transform: translateX(14px); } }
+.hero h2 { font-size: 1.9rem; margin: .4rem 0 .5rem; }
+.hero p { color: var(--muted); max-width: 620px; margin: 0 auto; }
+.hero .stats {
+  display: flex; justify-content: center; gap: 1.6rem; margin-top: 1.1rem; flex-wrap: wrap;
+}
+.hero .stats div { text-align: center; }
+.hero .stats b { display: block; font-size: 1.5rem; color: var(--green); }
+.hero .stats span { font-size: .78rem; color: var(--muted); }
+
+/* ---------- cards grid ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1rem;
+  margin-top: 1.4rem;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.card.clickable:hover { transform: translateY(-4px); box-shadow: 0 8px 22px rgba(20,40,30,.14); }
+.card .icon { font-size: 1.9rem; }
+.card h3 { margin: .4rem 0 .25rem; font-size: 1.05rem; }
+.card p { font-size: .85rem; color: var(--muted); }
+.card .meta { margin-top: .6rem; font-size: .76rem; color: var(--green); font-weight: 600; }
+
+/* progress bars on category cards */
+.mastery { height: 7px; background: var(--border); border-radius: 5px; margin-top: .7rem; overflow: hidden; }
+.mastery i { display: block; height: 100%; background: linear-gradient(90deg, var(--green), var(--accent)); border-radius: 5px; transition: width .6s ease; }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-block;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  padding: .68rem 1.5rem;
+  border-radius: 999px;
+  font-size: .96rem;
+  font-weight: 600;
+  transition: transform .12s ease, background .2s;
+  box-shadow: var(--shadow);
+}
+.btn:hover { background: var(--green-dark); transform: translateY(-2px); }
+.btn.secondary { background: var(--card); color: var(--text); border: 1.5px solid var(--border); }
+.btn.secondary:hover { background: var(--border); }
+.btn.small { padding: .4rem .95rem; font-size: .82rem; }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+/* ---------- quiz ---------- */
+.quiz-top {
+  display: flex; align-items: center; gap: .9rem; flex-wrap: wrap; margin-bottom: 1rem;
+}
+.quiz-top .qcount { font-weight: 700; }
+.quiz-top .timer { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 600; }
+.progressbar { flex: 1 1 160px; height: 9px; background: var(--border); border-radius: 6px; overflow: hidden; min-width: 120px; }
+.progressbar i { display: block; height: 100%; width: 0; background: var(--green); border-radius: 6px; transition: width .4s ease; }
+
+.qcard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.6rem;
+}
+.qcard .qtype {
+  display: inline-block; font-size: .7rem; font-weight: 700; letter-spacing: .8px;
+  text-transform: uppercase; color: var(--blue);
+  background: color-mix(in srgb, var(--blue) 12%, transparent);
+  border-radius: 6px; padding: .18rem .55rem; margin-bottom: .7rem;
+}
+.qcard h3.qtext { font-size: 1.18rem; margin-bottom: 1.1rem; }
+.qsign { width: 130px; margin: 0 auto 1rem; filter: drop-shadow(0 3px 5px rgba(0,0,0,.2)); animation: signPop .4s ease; }
+.qsign svg { width: 100%; height: auto; }
+@keyframes signPop { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.opts { display: grid; gap: .6rem; }
+.opt {
+  text-align: left;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: .75rem 1rem;
+  font-size: .95rem;
+  color: var(--text);
+  transition: border-color .15s, background .15s, transform .1s;
+  position: relative;
+}
+.opt:hover:not(:disabled) { border-color: var(--green); transform: translateX(4px); }
+.opt .letter {
+  display: inline-block; width: 1.6rem; height: 1.6rem; line-height: 1.6rem;
+  text-align: center; border-radius: 50%; background: var(--border);
+  font-weight: 700; font-size: .8rem; margin-right: .6rem;
+}
+.opt.selected { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 10%, var(--bg)); }
+.opt.correct { border-color: var(--correct); background: var(--correct-bg); animation: pulseOk .45s ease; }
+.opt.wrong { border-color: var(--wrong); background: var(--wrong-bg); animation: shake .4s ease; }
+.opt:disabled { cursor: default; }
+@keyframes pulseOk { 0% { transform: scale(1);} 40% { transform: scale(1.025);} 100% { transform: scale(1);} }
+@keyframes shake { 0%,100% { transform: translateX(0);} 25% { transform: translateX(-6px);} 75% { transform: translateX(6px);} }
+
+.fib-row { display: flex; gap: .6rem; flex-wrap: wrap; }
+.fib-input {
+  flex: 1 1 220px;
+  padding: .7rem 1rem;
+  font-size: 1rem;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+}
+.fib-input:focus { outline: none; border-color: var(--green); }
+.fib-input.correct { border-color: var(--correct); background: var(--correct-bg); }
+.fib-input.wrong { border-color: var(--wrong); background: var(--wrong-bg); }
+
+.explain {
+  margin-top: 1rem;
+  border-left: 4px solid var(--green);
+  background: color-mix(in srgb, var(--green) 8%, var(--card));
+  border-radius: 0 10px 10px 0;
+  padding: .8rem 1rem;
+  font-size: .9rem;
+  animation: fadeUp .3s ease;
+}
+.explain b { color: var(--green); }
+.explain.bad { border-color: var(--wrong); background: color-mix(in srgb, var(--wrong) 8%, var(--card)); }
+.explain.bad b { color: var(--wrong); }
+
+.quiz-actions { margin-top: 1.2rem; display: flex; gap: .7rem; flex-wrap: wrap; }
+
+/* ---------- results ---------- */
+.result-card { text-align: center; padding: 2.4rem 1.4rem; position: relative; overflow: hidden; }
+.result-card .big { font-size: 3.4rem; }
+.score-ring {
+  width: 150px; height: 150px; margin: 1rem auto; position: relative;
+}
+.score-ring svg { transform: rotate(-90deg); }
+.score-ring .track { fill: none; stroke: var(--border); stroke-width: 12; }
+.score-ring .fill { fill: none; stroke: var(--green); stroke-width: 12; stroke-linecap: round;
+  stroke-dasharray: 408; stroke-dashoffset: 408; transition: stroke-dashoffset 1.2s ease .2s; }
+.score-ring.fail .fill { stroke: var(--wrong); }
+.score-ring .num {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; font-size: 1.7rem; font-weight: 800;
+}
+.score-ring .num small { font-size: .75rem; color: var(--muted); font-weight: 500; }
+.verdict { font-size: 1.35rem; font-weight: 800; margin-top: .3rem; }
+.verdict.pass { color: var(--correct); }
+.verdict.fail { color: var(--wrong); }
+.result-note { color: var(--muted); font-size: .9rem; margin-top: .4rem; }
+
+.confetti {
+  position: absolute; top: -12px; width: 10px; height: 16px; opacity: .9;
+  animation: fall linear forwards;
+}
+@keyframes fall {
+  to { transform: translateY(500px) rotate(720deg); opacity: 0; }
+}
+
+/* ---------- review list ---------- */
+.review-item {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1rem 1.1rem; margin-top: .8rem; box-shadow: var(--shadow);
+}
+.review-item .tag { font-size: .7rem; font-weight: 700; padding: .15rem .5rem; border-radius: 6px; }
+.review-item .tag.ok { background: var(--correct-bg); color: var(--correct); }
+.review-item .tag.bad { background: var(--wrong-bg); color: var(--wrong); }
+.review-item p { font-size: .88rem; margin-top: .35rem; }
+.review-item .ans { color: var(--correct); font-weight: 600; }
+
+/* ---------- flashcards ---------- */
+.flash-stage { perspective: 1200px; max-width: 560px; margin: 1.2rem auto; }
+.flashcard {
+  position: relative; width: 100%; min-height: 300px;
+  transform-style: preserve-3d; transition: transform .55s cubic-bezier(.4,.1,.2,1);
+  cursor: pointer;
+}
+.flashcard.flipped { transform: rotateY(180deg); }
+.flash-face {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 1.6rem; text-align: center; gap: .8rem;
+}
+.flash-face.back { transform: rotateY(180deg); background: color-mix(in srgb, var(--green) 7%, var(--card)); }
+.flash-face .hint { font-size: .72rem; color: var(--muted); position: absolute; bottom: .8rem; }
+.flash-face h3 { font-size: 1.12rem; }
+.flash-face .qsign { width: 110px; margin: 0; }
+.flash-face p { font-size: .92rem; }
+.flash-controls { display: flex; justify-content: center; gap: .7rem; flex-wrap: wrap; margin-top: 1rem; }
+.flash-count { text-align: center; color: var(--muted); font-size: .85rem; margin-top: .6rem; }
+
+/* ---------- signs gallery ---------- */
+.sign-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .9rem; margin-top: 1.2rem; }
+.sign-tile {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: .9rem; text-align: center; box-shadow: var(--shadow);
+  transition: transform .18s;
+}
+.sign-tile:hover { transform: scale(1.05); }
+.sign-tile svg { width: 84px; height: 84px; }
+.sign-tile b { display: block; font-size: .8rem; margin-top: .4rem; }
+.sign-tile span { font-size: .7rem; color: var(--muted); display: block; margin-top: .2rem; }
+
+/* ---------- drive test section ---------- */
+.section-block {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 1.4rem; margin-top: 1.1rem;
+}
+.section-block h3 { color: var(--green); margin-bottom: .6rem; }
+.section-block ul { padding-left: 1.2rem; font-size: .92rem; }
+.section-block li { margin: .35rem 0; }
+details.scenario {
+  border: 1px solid var(--border); border-radius: 10px; margin-top: .7rem;
+  background: var(--bg); overflow: hidden;
+}
+details.scenario summary {
+  padding: .8rem 1rem; cursor: pointer; font-weight: 600; font-size: .93rem;
+  list-style: none; position: relative;
+}
+details.scenario summary::after { content: "▾"; position: absolute; right: 1rem; transition: transform .25s; color: var(--muted); }
+details.scenario[open] summary::after { transform: rotate(180deg); }
+details.scenario .body { padding: 0 1rem .9rem; font-size: .89rem; color: var(--text); }
+details.scenario .body b { color: var(--green); }
+
+/* ---------- about / footer ---------- */
+.notice {
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.3rem;
+  background: color-mix(in srgb, var(--accent) 9%, var(--card));
+  font-size: .92rem;
+  margin-top: 1rem;
+}
+footer {
+  text-align: center; padding: 1.4rem 1rem 2rem; color: var(--muted); font-size: .8rem;
+  border-top: 1px solid var(--border); margin-top: 2rem;
+}
+footer a { color: var(--green); }
+
+/* ---------- setup panel ---------- */
+.setup-row { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: .9rem; }
+.chip {
+  border: 2px solid var(--border); background: var(--card); color: var(--text);
+  border-radius: 999px; padding: .45rem 1rem; font-size: .86rem; transition: all .15s;
+}
+.chip.active { border-color: var(--green); background: color-mix(in srgb, var(--green) 12%, var(--card)); font-weight: 700; }
+
+@media (max-width: 640px) {
+  header h1 { font-size: .98rem; }
+  .qcard { padding: 1.1rem; }
+  .hero h2 { font-size: 1.5rem; }
+}
