@@ -356,6 +356,49 @@ footer a { color: var(--green); }
 }
 .chip.active { border-color: var(--green); background: color-mix(in srgb, var(--green) 12%, var(--card)); font-weight: 700; }
 
+/* ---------- v2: scenarios, audio, stats, browse ---------- */
+.qscn {
+  width: min(280px, 90%);
+  margin: 0 auto 1rem;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #cfd6cf;
+  box-shadow: var(--shadow);
+  animation: signPop .4s ease;
+}
+[data-theme="dark"] .qscn { background: #46504a; }
+.qscn svg { width: 100%; height: auto; display: block; }
+.scn-embed { margin: .6rem 0; }
+
+.audioToggle.on {
+  background: var(--green) !important;
+  color: #fff !important;
+  border-color: var(--green) !important;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) 2fr 3.4rem;
+  align-items: center;
+  gap: .8rem;
+  padding: .45rem 0;
+  font-size: .9rem;
+  border-bottom: 1px solid var(--border);
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-row .mastery { margin-top: 0; }
+.stat-row b { text-align: right; color: var(--green); }
+
+.browse-item { cursor: pointer; transition: transform .12s; }
+.browse-item:hover { transform: translateX(4px); }
+.browse-item .qsign { width: 90px; margin: .5rem 0; }
+.browse-item .qscn { margin: .5rem 0; }
+
+button:focus-visible, input:focus-visible, .opt:focus-visible, summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
 @media (max-width: 640px) {
   header h1 { font-size: .98rem; }
   .qcard { padding: 1.1rem; }

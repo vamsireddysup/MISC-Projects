@@ -4,7 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Oregon DMV Practice Test — Free Class C Knowledge Test Prep</title>
-<meta name="description" content="Free, ad-free Oregon DMV Class C knowledge test practice: quizzes, flashcards, road signs and drive-test prep based on the 2026-2027 Oregon Driver Manual. Unofficial study aid.">
+<meta name="description" content="Free, ad-free Oregon DMV Class C knowledge test practice: 300+ questions, flashcards, animated scenarios, road signs, audio read-aloud and drive-test prep based on the 2026-2027 Oregon Driver Manual. Unofficial study aid.">
+<link rel="canonical" href="https://vamsireddysup.github.io/MISC-Projects/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Oregon DMV Practice Test — Free Class C Prep">
+<meta property="og:description" content="300+ realistic Oregon knowledge-test questions, flashcards, animated scenarios and drive-test prep. Free, no ads. Unofficial study aid.">
+<meta property="og:url" content="https://vamsireddysup.github.io/MISC-Projects/">
+<meta property="og:image" content="https://vamsireddysup.github.io/MISC-Projects/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Oregon DMV Practice Test — Free Class C Prep">
+<meta name="twitter:description" content="300+ realistic Oregon knowledge-test questions, flashcards, animated scenarios and drive-test prep. Free, no ads.">
+<meta name="twitter:image" content="https://vamsireddysup.github.io/MISC-Projects/og.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🚗</text></svg>">
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -18,9 +28,11 @@
     <button data-nav="flash">Flashcards</button>
     <button data-nav="signs">Road Signs</button>
     <button data-nav="drive">Drive Test</button>
+    <button data-nav="stats">Stats</button>
+    <button data-nav="browse">Browse</button>
     <button data-nav="about">About</button>
   </nav>
-  <button id="themeToggle" title="Toggle dark / light theme">🌓</button>
+  <button id="themeToggle" title="Toggle dark / light theme" aria-label="Toggle dark or light theme">🌓</button>
 </header>
 
 <div class="banner">
@@ -40,6 +52,7 @@
       <div><b>35</b><span>per real test</span></div>
       <div><b>28</b><span>needed to pass</span></div>
       <div><b id="statBest">—</b><span>your best score</span></div>
+      <div><b id="statStreak">0</b><span>day streak</span></div>
     </div>
   </div>
 
@@ -92,6 +105,7 @@
     <span class="qcount" id="qCount">1 / 35</span>
     <div class="progressbar"><i id="qProgress"></i></div>
     <span class="timer" id="qTimer" style="display:none;">30:00</span>
+    <button class="btn secondary small audioToggle" aria-label="Toggle read-aloud audio">🔊</button>
     <button class="btn secondary small" id="quitQuiz">✕ Quit</button>
   </div>
   <div class="qcard" id="qCard"></div>
@@ -126,6 +140,7 @@
   <div class="flash-controls">
     <button class="btn secondary" id="flashAgain">🔁 Review again</button>
     <button class="btn" id="flashKnow">✅ I know it</button>
+    <button class="btn secondary audioToggle" aria-label="Toggle read-aloud audio">🔊</button>
   </div>
   <div class="flash-count" id="flashCount"></div>
 </section>
@@ -136,6 +151,31 @@
   <p style="color:var(--muted);font-size:.9rem;">Every sign below is drawn from the manual. Learn the shapes and colors: red = prohibitive, yellow = warning, orange = work zone, green = guide, blue = services, brown = recreation.</p>
   <div class="quiz-actions"><button class="btn" id="signsQuizBtn">⚡ Rapid-fire sign quiz</button></div>
   <div class="sign-grid" id="signGrid"></div>
+</section>
+
+<!-- ============ STATS ============ -->
+<section id="view-stats" class="view">
+  <h2>📈 Your Progress</h2>
+  <p style="color:var(--muted);font-size:.9rem;">Everything is stored on this device only. Weak questions automatically come back more often in topic quizzes and flashcards.</p>
+  <div class="grid" id="statsTiles"></div>
+  <div class="section-block">
+    <h3>Practice-test history (last 10)</h3>
+    <div id="examChart"></div>
+  </div>
+  <div class="section-block">
+    <h3>Mastery &amp; accuracy by topic</h3>
+    <div id="statsCats"></div>
+  </div>
+</section>
+
+<!-- ============ BROWSE ============ -->
+<section id="view-browse" class="view">
+  <h2>🔎 Browse all questions</h2>
+  <p style="color:var(--muted);font-size:.9rem;">Search the whole bank — tap any question to reveal its answer and explanation.</p>
+  <input type="search" class="fib-input" id="browseSearch" placeholder="Search questions, answers, explanations…" aria-label="Search questions" style="margin-top:.6rem;max-width:520px;">
+  <div class="setup-row" id="browseCats"></div>
+  <p style="color:var(--muted);font-size:.82rem;margin-top:.6rem;" id="browseCount"></p>
+  <div id="browseList"></div>
 </section>
 
 <!-- ============ DRIVE TEST PREP ============ -->
@@ -170,14 +210,14 @@
 
   <div class="section-block">
     <h3>🗣️ Real-time scenarios the examiner may ask about (tap to reveal)</h3>
-    <details class="scenario"><summary>An emergency vehicle approaches with lights and siren while you're driving. What do you do?</summary><div class="body"><b>Answer:</b> Immediately pull as close as safely possible to the right side of the road and stop — but never in an intersection. Stay stopped until it passes, then stay at least 500 feet behind it.</div></details>
+    <details class="scenario"><summary>An emergency vehicle approaches with lights and siren while you're driving. What do you do?</summary><div class="body"><div class="scn-embed" data-scn="emergency"></div><b>Answer:</b> Immediately pull as close as safely possible to the right side of the road and stop — but never in an intersection. Stay stopped until it passes, then stay at least 500 feet behind it.</div></details>
     <details class="scenario"><summary>You're already in the intersection when you hear the siren behind you.</summary><div class="body"><b>Answer:</b> Continue through the intersection first, then pull to the right and stop. Never stop inside the intersection.</div></details>
-    <details class="scenario"><summary>A school bus ahead turns on flashing amber lights. Then red.</summary><div class="body"><b>Answer:</b> Amber means it's about to stop — prepare to stop. Flashing red means stop before reaching the bus and remain stopped until the red lights turn off. On a road with only a painted median, traffic in <i>all</i> lanes stops.</div></details>
+    <details class="scenario"><summary>A school bus ahead turns on flashing amber lights. Then red.</summary><div class="body"><div class="scn-embed" data-scn="schoolBus"></div><b>Answer:</b> Amber means it's about to stop — prepare to stop. Flashing red means stop before reaching the bus and remain stopped until the red lights turn off. On a road with only a painted median, traffic in <i>all</i> lanes stops.</div></details>
     <details class="scenario"><summary>The light turns yellow as you approach the intersection.</summary><div class="body"><b>Answer:</b> Stop before entering if you can do so safely. If you're too close to stop safely, continue through carefully. Slamming the brakes or accelerating to "beat it" are both scored against you.</div></details>
     <details class="scenario"><summary>The examiner asks you to park downhill on a street with a curb.</summary><div class="body"><b>Answer:</b> Turn the front wheels <i>toward</i> the curb, set the parking brake, leave the car in park (or in gear for a manual). Uphill with a curb: wheels toward the travel lane. No curb: wheels toward the edge of the road.</div></details>
-    <details class="scenario"><summary>You approach a roundabout during the test.</summary><div class="body"><b>Answer:</b> Slow down, stop for pedestrians in the crosswalk, yield to traffic inside and exiting, merge counterclockwise into a gap, don't pass anyone (especially trucks), and signal right before your exit.</div></details>
+    <details class="scenario"><summary>You approach a roundabout during the test.</summary><div class="body"><div class="scn-embed" data-scn="roundabout"></div><b>Answer:</b> Slow down, stop for pedestrians in the crosswalk, yield to traffic inside and exiting, merge counterclockwise into a gap, don't pass anyone (especially trucks), and signal right before your exit.</div></details>
     <details class="scenario"><summary>A pedestrian steps into an unmarked crosswalk at an intersection.</summary><div class="body"><b>Answer:</b> Stop and stay stopped — every intersection has a crosswalk even without painted lines. Remain stopped while they're in your lane, the adjacent lane, or the lane you're turning into. For a white-cane or guide-dog user, wait until they've crossed the <i>entire</i> road.</div></details>
-    <details class="scenario"><summary>You need to change lanes on a multi-lane road.</summary><div class="body"><b>Answer:</b> Signal at least 100 ft ahead, check rear and side mirrors, glance over your shoulder in the direction of the move to clear your blind spot, then move smoothly. Examiners specifically watch for the head check.</div></details>
+    <details class="scenario"><summary>You need to change lanes on a multi-lane road.</summary><div class="body"><div class="scn-embed" data-scn="blindSpot"></div><b>Answer:</b> Signal at least 100 ft ahead, check rear and side mirrors, glance over your shoulder in the direction of the move to clear your blind spot, then move smoothly. Examiners specifically watch for the head check.</div></details>
     <details class="scenario"><summary>A bicyclist is in a bike lane to your right and you want to turn right.</summary><div class="body"><b>Answer:</b> Yield to them first — never merge into the bike lane to prepare for the turn. Check your right blind spot for riders coming up beside you, signal, and turn across the lane only when clear.</div></details>
     <details class="scenario"><summary>The examiner asks: what would you do if your brakes failed?</summary><div class="body"><b>Answer:</b> Pump the brakes to build pressure, shift to a lower gear, slowly apply the parking brake, warn others with horn or lights, and ease onto the shoulder.</div></details>
     <details class="scenario"><summary>You come to a flashing red signal / a dark signal at a power outage.</summary><div class="body"><b>Answer:</b> Flashing red = treat as a stop sign. A completely dark signal = treat the intersection as an all-way stop.</div></details>
@@ -227,6 +267,7 @@
 </footer>
 
 <script src="js/signs.js"></script>
+<script src="js/scenarios.js"></script>
 <script src="js/questions.js"></script>
 <script src="js/app.js"></script>
 </body>
