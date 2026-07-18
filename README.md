@@ -20,7 +20,7 @@ A free, ad-free static website (`oregon-dmv-practice/`) for practicing the Orego
 knowledge test, built from the 2026–2027 Oregon Driver Manual. Unofficial study aid —
 answers may vary; always verify with the official manual.
 
-**🌐 Live site: https://vamsireddysup.github.io/MISC-Projects/**
+**🌐 Live site: https://vamsireddysup.github.io/oregon-dmv-practice/**
 (auto-deployed to GitHub Pages by `.github/workflows/deploy-pages.yml` on every push to master)
 
 **Key features:**
