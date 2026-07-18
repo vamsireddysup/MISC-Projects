@@ -1,4 +1,4 @@
-/* Oregon DMV Practice — app engine */
+/* Oregon DMV Practice — app engine (v2: audio, spaced repetition, stats, browse) */
 (() => {
 "use strict";
 
@@ -14,6 +14,10 @@ const store = (() => {
   data.mastered ||= [];      // question indices answered right at least once
   data.best ||= null;        // best exam score
   data.theme ||= null;
+  data.qstats ||= {};        // per-question {seen, wrong, streak}
+  data.exams ||= [];         // exam history [{s,t,d}]
+  data.streak ||= { last: null, count: 0 };
+  data.audio ||= false;      // read-aloud enabled
   const save = () => localStorage.setItem(LS_KEY, JSON.stringify(data));
   return { data, save };
 })();
@@ -33,8 +37,46 @@ $("#themeToggle").addEventListener("click", () => {
 });
 applyTheme();
 
+/* ---------- speech (read-aloud, like the DMV audio assist) ---------- */
+const speech = {
+  supported: "speechSynthesis" in window,
+  stop() { if (this.supported) speechSynthesis.cancel(); },
+  say(text) {
+    if (!this.supported || !store.data.audio) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.95;
+    speechSynthesis.speak(u);
+  }
+};
+function questionSpeech(q) {
+  let t = q.q;
+  if (q.t === "tf") t += " True, or false?";
+  else if (q.t === "yn") t += " Yes, or no?";
+  else if (q.t !== "fib") {
+    const opts = q.o || [];
+    t += " " + opts.map((o, i) => `Option ${String.fromCharCode(65 + i)}: ${o}.`).join(" ");
+  }
+  return t;
+}
+function syncAudioButtons() {
+  $$(".audioToggle").forEach(b => {
+    b.classList.toggle("on", store.data.audio);
+    b.title = store.data.audio ? "Read-aloud is ON" : "Read-aloud is OFF";
+  });
+}
+function toggleAudio() {
+  store.data.audio = !store.data.audio;
+  store.save();
+  syncAudioButtons();
+  if (!store.data.audio) speech.stop();
+  else if (quiz) speech.say(questionSpeech(quiz.questions[quiz.i]));
+}
+$$(".audioToggle").forEach(b => b.addEventListener("click", toggleAudio));
+
 /* ---------- routing ---------- */
 function show(view) {
+  speech.stop();
   $$(".view").forEach(v => v.classList.remove("active"));
   $("#view-" + view).classList.add("active");
   $$("header nav button").forEach(b => b.classList.toggle("active", b.dataset.nav === view));
@@ -42,6 +84,8 @@ function show(view) {
   if (view === "home") renderHome();
   if (view === "flash") startFlashcards(flashCat);
   if (view === "signs") renderSignGallery();
+  if (view === "stats") renderStats();
+  if (view === "browse") renderBrowse();
 }
 $$("header nav button").forEach(b => b.addEventListener("click", () => show(b.dataset.nav)));
 
@@ -54,13 +98,30 @@ const shuffle = arr => {
   }
   return a;
 };
+/* Spaced-repetition weighting: unseen and recently-wrong questions surface first.
+   Weighted random order via exponential sort keys. */
+function weightedShuffle(pool) {
+  return pool.map(q => {
+    const st = store.data.qstats[qid(q)];
+    let w;
+    if (!st || !st.seen) w = 3;                 // never seen
+    else if (st.streak === 0) w = 4;            // wrong last time
+    else if (st.streak === 1) w = 2;            // shaky
+    else w = 1;                                  // solid
+    return { q, k: -Math.log(Math.random()) / w };
+  }).sort((a, b) => a.k - b.k).map(x => x.q);
+}
 const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 const typeLabel = { mc: "Multiple choice", tf: "True / False", yn: "Yes / No", fib: "Fill in the blank", multi: "Choose all that apply", sign: "Identify the sign" };
+const visualFor = q =>
+  q.s && SIGNS[q.s] ? `<div class="qsign">${SIGNS[q.s].svg}</div>` :
+  q.scn && SCENARIOS[q.scn] ? `<div class="qscn">${SCENARIOS[q.scn].svg}</div>` : "";
 
 /* ---------- home ---------- */
 function renderHome() {
   $("#statQ").textContent = QUESTIONS.length;
   $("#statBest").textContent = store.data.best ? `${store.data.best.score}/${store.data.best.total}` : "—";
+  $("#statStreak").textContent = store.data.streak.count ? `${store.data.streak.count}🔥` : "0";
   $("#missedCount").textContent = store.data.missed.length;
 
   const grid = $("#categoryGrid");
@@ -75,13 +136,23 @@ function renderHome() {
       <p>${qs.length} questions</p>
       <div class="mastery"><i style="width:${pct}%"></i></div>
       <div class="meta">${pct}% mastered · quiz me →</div>`;
-    card.addEventListener("click", () => startQuiz(shuffle(qs), { title: cat.name, instant: true }));
+    card.addEventListener("click", () => startQuiz(weightedShuffle(qs), { title: cat.name, instant: true }));
     grid.appendChild(card);
   }
 }
 
+/* ---------- streak ---------- */
+function bumpStreak() {
+  const today = new Date().toISOString().slice(0, 10);
+  const s = store.data.streak;
+  if (s.last === today) return;
+  const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+  s.count = (s.last === yesterday) ? s.count + 1 : 1;
+  s.last = today;
+}
+
 /* ---------- quiz engine ---------- */
-let quiz = null;   // {questions, i, answers[], instant, timed, passMark, timerId, secondsLeft}
+let quiz = null;
 
 function startQuiz(questions, opts = {}) {
   if (!questions.length) { alert("No questions to review — nice work! 🎉"); return; }
@@ -122,12 +193,12 @@ function renderQuestion() {
   $("#nextQuestion").style.display = "none";
 
   let html = `<span class="qtype">${typeLabel[q.t]}</span>`;
-  if (q.s && SIGNS[q.s]) html += `<div class="qsign">${SIGNS[q.s].svg}</div>`;
+  html += visualFor(q);
   html += `<h3 class="qtext">${esc(q.q)}</h3>`;
 
   if (q.t === "fib") {
     html += `<div class="fib-row">
-      <input class="fib-input" id="fibInput" type="text" autocomplete="off" placeholder="Type your answer…">
+      <input class="fib-input" id="fibInput" type="text" autocomplete="off" placeholder="Type your answer…" aria-label="Your answer">
     </div>`;
   } else {
     const opts = (q.t === "tf") ? ["True", "False"] : (q.t === "yn") ? ["Yes", "No"] : q.o;
@@ -136,6 +207,7 @@ function renderQuestion() {
     ).join("") + `</div>`;
   }
   $("#qCard").innerHTML = html;
+  speech.say(questionSpeech(q));
 
   if (q.t === "fib") {
     const input = $("#fibInput");
@@ -177,8 +249,7 @@ function correctText(q) {
   if (q.t === "tf") return q.a ? "True" : "False";
   if (q.t === "yn") return q.a ? "Yes" : "No";
   if (q.t === "multi") return q.a.map(i => q.o[i]).join(" · ");
-  const opts = q.o;
-  return opts[q.a];
+  return q.o[q.a];
 }
 
 function submitCurrent() {
@@ -200,6 +271,7 @@ function submitCurrent() {
 }
 
 function revealFeedback(q, given, ok) {
+  speech.stop();
   if (q.t === "fib") {
     const input = $("#fibInput");
     input.disabled = true;
@@ -218,8 +290,10 @@ function revealFeedback(q, given, ok) {
   }
   const div = document.createElement("div");
   div.className = "explain" + (ok ? "" : " bad");
+  div.setAttribute("aria-live", "polite");
   div.innerHTML = `<b>${ok ? "✅ Correct!" : "❌ Not quite — correct answer: " + esc(correctText(q))}</b><br>${esc(q.e)}`;
   $("#qCard").appendChild(div);
+  if (store.data.audio) speech.say((ok ? "Correct. " : "Not quite. The correct answer is " + correctText(q) + ". ") + q.e);
 }
 
 function advanceButtons() {
@@ -229,7 +303,6 @@ function advanceButtons() {
   btn.style.display = "";
   btn.textContent = last ? "Finish ✔" : "Next →";
   if (!quiz.instant) {
-    // exam mode: auto-advance shortly after selection for smooth flow
     setTimeout(() => { if (quiz) btn.click(); }, 250);
   } else {
     btn.focus();
@@ -238,6 +311,10 @@ function advanceButtons() {
 
 function recordResult(q, ok) {
   const id = qid(q);
+  const st = store.data.qstats[id] ||= { seen: 0, wrong: 0, streak: 0 };
+  st.seen++;
+  if (ok) st.streak++;
+  else { st.wrong++; st.streak = 0; }
   if (ok) {
     if (!store.data.mastered.includes(id)) store.data.mastered.push(id);
     store.data.missed = store.data.missed.filter(x => x !== id);
@@ -245,6 +322,7 @@ function recordResult(q, ok) {
     if (!store.data.missed.includes(id)) store.data.missed.push(id);
     store.data.mastered = store.data.mastered.filter(x => x !== id);
   }
+  bumpStreak();
   store.save();
 }
 
@@ -266,16 +344,17 @@ function endQuiz(dest) {
 
 function finishQuiz() {
   if (quiz.timerId) clearInterval(quiz.timerId);
+  speech.stop();
   const total = quiz.questions.length;
   const score = quiz.answers.filter(a => a && a.ok).length;
   const passMark = quiz.passMark;
   const passed = passMark != null ? score >= passMark : null;
 
   if (quiz.isExam) {
-    if (!store.data.best || score > store.data.best.score) {
-      store.data.best = { score, total };
-      store.save();
-    }
+    if (!store.data.best || score > store.data.best.score) store.data.best = { score, total };
+    store.data.exams.push({ s: score, t: total, d: new Date().toISOString().slice(0, 10) });
+    if (store.data.exams.length > 20) store.data.exams = store.data.exams.slice(-20);
+    store.save();
   }
 
   const pct = Math.round(score / total * 100);
@@ -297,7 +376,6 @@ function finishQuiz() {
   html += `<div class="result-note">Remember: this is an unofficial review — answers on the real test may vary.</div>`;
   $("#resultCard").innerHTML = html;
 
-  // review list
   const list = $("#reviewList");
   list.innerHTML = "";
   quiz.questions.forEach((q, i) => {
@@ -360,21 +438,21 @@ $$("#examSetup .chip[data-timer]").forEach(c => c.addEventListener("click", () =
 }));
 function beginExam() {
   $("#examSetup").style.display = "none";
-  startQuiz(shuffle(QUESTIONS).slice(0, 35),
-    { instant: examOpts.instant, timed: examOpts.timed, passMark: 28, isExam: true, title: "Practice Test" });
+  startQuiz(shuffle(QUESTIONS).slice(0, 35),   // exam stays uniformly random, like the real thing
+    { instant: examOpts.instant, timed: examOpts.timed, passMark: 28, isExam: true });
 }
 $("#beginExam").addEventListener("click", beginExam);
 
 $("#startSignQuiz").addEventListener("click", () =>
-  startQuiz(shuffle(QUESTIONS.filter(q => q.t === "sign")), { instant: true }));
+  startQuiz(weightedShuffle(QUESTIONS.filter(q => q.t === "sign")), { instant: true }));
 $("#signsQuizBtn").addEventListener("click", () =>
-  startQuiz(shuffle(QUESTIONS.filter(q => q.t === "sign")), { instant: true }));
+  startQuiz(weightedShuffle(QUESTIONS.filter(q => q.t === "sign")), { instant: true }));
 $("#startMissed").addEventListener("click", () =>
   startQuiz(shuffle(store.data.missed.map(i => QUESTIONS[i]).filter(Boolean)), { instant: true }));
 
 /* ---------- flashcards ---------- */
 let flashCat = "all";
-let flash = null;  // {deck, i, flipped, again[]}
+let flash = null;
 
 function startFlashcards(cat) {
   flashCat = cat || "all";
@@ -385,7 +463,7 @@ function startFlashcards(cat) {
   $$("#flashCats .chip").forEach(b => b.addEventListener("click", () => startFlashcards(b.dataset.c)));
 
   const pool = flashCat === "all" ? QUESTIONS : QUESTIONS.filter(q => q.c === flashCat);
-  flash = { deck: shuffle(pool), i: 0, flipped: false, again: [], done: 0, total: pool.length };
+  flash = { deck: weightedShuffle(pool), i: 0, flipped: false, again: [], done: 0, total: pool.length };
   renderFlash();
 }
 
@@ -405,14 +483,14 @@ function renderFlash() {
     return;
   }
   const q = flash.deck[flash.i];
-  $("#flashFront").innerHTML =
-    (q.s && SIGNS[q.s] ? `<div class="qsign">${SIGNS[q.s].svg}</div>` : "") +
+  $("#flashFront").innerHTML = visualFor(q) +
     `<h3>${esc(q.q)}</h3><span class="hint">tap / space to flip</span>`;
   $("#flashBack").innerHTML =
     `<h3>✔ ${esc(correctText(q))}</h3><p>${esc(q.e)}</p><span class="hint">tap / space to flip back</span>`;
   $("#flashCount").textContent =
     `Card ${flash.done + 1} of ${flash.total}` +
     (flash.again.length ? ` · ${flash.again.length} queued for review` : "");
+  speech.say(q.q);
 }
 
 function flashNext(known) {
@@ -426,7 +504,12 @@ function flashNext(known) {
 }
 
 $("#flashcard").addEventListener("click", () => {
-  $("#flashcard").classList.toggle("flipped");
+  const c = $("#flashcard");
+  c.classList.toggle("flipped");
+  if (flash?.deck.length && c.classList.contains("flipped")) {
+    const q = flash.deck[flash.i];
+    speech.say(correctText(q) + ". " + q.e);
+  }
 });
 $("#flashKnow").addEventListener("click", () => flashNext(true));
 $("#flashAgain").addEventListener("click", () => flashNext(false));
@@ -434,7 +517,7 @@ $("#flashAgain").addEventListener("click", () => flashNext(false));
 document.addEventListener("keydown", e => {
   if (!$("#view-flash").classList.contains("active")) return;
   if (e.target.tagName === "INPUT") return;
-  if (e.code === "Space") { e.preventDefault(); $("#flashcard").classList.toggle("flipped"); }
+  if (e.code === "Space") { e.preventDefault(); $("#flashcard").click(); }
   if (e.key === "ArrowRight") flashNext(true);
   if (e.key === "ArrowLeft") flashNext(false);
 });
@@ -451,6 +534,111 @@ function renderSignGallery() {
   }
 }
 
+/* ---------- stats ---------- */
+function renderStats() {
+  const st = store.data;
+  const answered = Object.values(st.qstats).reduce((n, s) => n + (s.seen ? 1 : 0), 0);
+  const attempts = Object.values(st.qstats).reduce((n, s) => n + s.seen, 0);
+  const wrongs = Object.values(st.qstats).reduce((n, s) => n + s.wrong, 0);
+  const acc = attempts ? Math.round((attempts - wrongs) / attempts * 100) : 0;
+
+  $("#statsTiles").innerHTML = `
+    <div class="card"><div class="icon">🔥</div><h3>${st.streak.count} day${st.streak.count === 1 ? "" : "s"}</h3><p>study streak</p></div>
+    <div class="card"><div class="icon">🎯</div><h3>${acc}%</h3><p>overall accuracy (${attempts} answers)</p></div>
+    <div class="card"><div class="icon">📚</div><h3>${answered}/${QUESTIONS.length}</h3><p>questions attempted</p></div>
+    <div class="card"><div class="icon">🏆</div><h3>${st.best ? st.best.score + "/" + st.best.total : "—"}</h3><p>best practice-test score</p></div>`;
+
+  // per-category accuracy
+  const catBox = $("#statsCats");
+  catBox.innerHTML = "";
+  for (const [key, cat] of Object.entries(CATEGORIES)) {
+    const qs = QUESTIONS.filter(q => q.c === key);
+    let seen = 0, wrong = 0, mastered = 0;
+    qs.forEach(q => {
+      const s = st.qstats[qid(q)];
+      if (s) { seen += s.seen; wrong += s.wrong; }
+      if (st.mastered.includes(qid(q))) mastered++;
+    });
+    const a = seen ? Math.round((seen - wrong) / seen * 100) : 0;
+    const m = Math.round(mastered / qs.length * 100);
+    const row = document.createElement("div");
+    row.className = "stat-row";
+    row.innerHTML = `<span>${cat.icon} ${cat.name}</span>
+      <div class="mastery"><i style="width:${m}%"></i></div>
+      <b>${seen ? a + "%" : "—"}</b>`;
+    catBox.appendChild(row);
+  }
+
+  // exam history chart
+  const exams = st.exams.slice(-10);
+  const chart = $("#examChart");
+  if (!exams.length) {
+    chart.innerHTML = `<p style="color:var(--muted);font-size:.9rem;">No practice tests taken yet — your last 10 scores will chart here.</p>`;
+    return;
+  }
+  const W = 460, H = 170, pad = 28, bw = Math.min(36, (W - pad * 2) / exams.length - 8);
+  const passY = H - 20 - (28 / 35) * (H - 40);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:520px">`;
+  svg += `<line x1="${pad}" y1="${passY}" x2="${W - 8}" y2="${passY}" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
+          <text x="${W - 10}" y="${passY - 5}" font-size="10" fill="var(--accent)" text-anchor="end">pass · 28</text>`;
+  exams.forEach((e, i) => {
+    const h = (e.s / e.t) * (H - 40);
+    const x = pad + i * ((W - pad * 2) / exams.length) + 4;
+    const y = H - 20 - h;
+    const pass = e.s >= 28;
+    svg += `<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="5" fill="${pass ? "var(--correct)" : "var(--wrong)"}" opacity=".9"><animate attributeName="height" from="0" to="${h}" dur=".5s"/></rect>
+            <text x="${x + bw / 2}" y="${y - 4}" font-size="10" fill="var(--muted)" text-anchor="middle">${e.s}</text>`;
+  });
+  svg += `</svg>`;
+  chart.innerHTML = svg;
+}
+
+/* ---------- browse / search ---------- */
+function renderBrowse() {
+  const chipsBar = $("#browseCats");
+  if (!chipsBar.dataset.built) {
+    chipsBar.innerHTML = `<button class="chip active" data-c="all">All</button>` +
+      Object.entries(CATEGORIES).map(([k, c]) => `<button class="chip" data-c="${k}">${c.icon} ${c.name}</button>`).join("");
+    chipsBar.dataset.built = "1";
+    $$("#browseCats .chip").forEach(b => b.addEventListener("click", () => {
+      $$("#browseCats .chip").forEach(x => x.classList.remove("active"));
+      b.classList.add("active");
+      browseFilter();
+    }));
+    $("#browseSearch").addEventListener("input", browseFilter);
+  }
+  browseFilter();
+}
+function browseFilter() {
+  const term = $("#browseSearch").value.toLowerCase().trim();
+  const cat = $("#browseCats .chip.active")?.dataset.c || "all";
+  const list = $("#browseList");
+  list.innerHTML = "";
+  let n = 0;
+  QUESTIONS.forEach(q => {
+    if (cat !== "all" && q.c !== cat) return;
+    if (term && !(q.q + " " + correctText(q) + " " + q.e).toLowerCase().includes(term)) return;
+    if (n >= 120) return;
+    n++;
+    const item = document.createElement("div");
+    item.className = "review-item browse-item";
+    item.innerHTML = `<span class="tag ok">${CATEGORIES[q.c].icon} ${typeLabel[q.t]}</span>
+      <p><b>${esc(q.q)}</b></p>
+      <div class="browse-answer" hidden>
+        ${visualFor(q)}
+        <p class="ans">✔ ${esc(correctText(q))}</p>
+        <p style="color:var(--muted)">${esc(q.e)}</p>
+      </div>
+      <p class="reveal-hint" style="color:var(--green);font-size:.78rem;">tap to reveal answer</p>`;
+    item.addEventListener("click", () => {
+      item.querySelector(".browse-answer").hidden = !item.querySelector(".browse-answer").hidden;
+      item.querySelector(".reveal-hint").hidden = !item.querySelector(".browse-answer").hidden;
+    });
+    list.appendChild(item);
+  });
+  $("#browseCount").textContent = n >= 120 ? `showing first 120 matches — refine your search` : `${n} question${n === 1 ? "" : "s"}`;
+}
+
 /* ---------- misc ---------- */
 $("#resetProgress").addEventListener("click", () => {
   if (confirm("Erase all saved scores and progress on this device?")) {
@@ -459,5 +647,12 @@ $("#resetProgress").addEventListener("click", () => {
   }
 });
 
+/* animated scenario embeds on the Drive Test page */
+$$(".scn-embed").forEach(el => {
+  const scn = SCENARIOS[el.dataset.scn];
+  if (scn) el.innerHTML = `<div class="qscn">${scn.svg}</div>`;
+});
+
+syncAudioButtons();
 renderHome();
 })();

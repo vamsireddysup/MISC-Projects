@@ -196,6 +196,46 @@ const SIGNS = {
     meaning: "Reduced school speed of 20 mph applies as posted — when flashing, between 7 a.m. and 5 p.m. on school days, or when children are present.",
     svg: `<svg viewBox="0 0 80 120"><rect x="3" y="3" width="74" height="40" rx="4" fill="#f6c700" stroke="#111" stroke-width="2"/><text x="40" y="20" font-size="12" font-weight="800" fill="#111" text-anchor="middle" font-family="Arial">SCHOOL</text><text x="40" y="36" font-size="9" font-weight="700" fill="#111" text-anchor="middle" font-family="Arial">SPEED LIMIT</text><rect x="3" y="45" width="74" height="72" rx="4" fill="#fff" stroke="#111" stroke-width="3"/><text x="40" y="88" font-size="34" font-weight="800" fill="#111" text-anchor="middle" font-family="Arial">20</text><text x="40" y="110" font-size="9" font-weight="700" fill="#111" text-anchor="middle" font-family="Arial">WHEN FLASHING</text></svg>`
   },
+  crossroad: {
+    name: "Crossroad",
+    meaning: "A four-way intersection is ahead. Cross-traffic may enter the road.",
+    svg: `<svg viewBox="0 0 100 100"><polygon points="50,4 96,50 50,96 4,50" fill="#f6c700" stroke="#111" stroke-width="3"/><rect x="44" y="22" width="12" height="56" rx="3" fill="#111"/><rect x="22" y="44" width="56" height="12" rx="3" fill="#111"/></svg>`
+  },
+  sideRoad: {
+    name: "Side Road (T Intersection)",
+    meaning: "A T intersection is ahead. Traffic may enter the road from the side shown.",
+    svg: `<svg viewBox="0 0 100 100"><polygon points="50,4 96,50 50,96 4,50" fill="#f6c700" stroke="#111" stroke-width="3"/><rect x="44" y="22" width="12" height="56" rx="3" fill="#111"/><rect x="50" y="44" width="28" height="12" rx="3" fill="#111"/></svg>`
+  },
+  sharpTurn: {
+    name: "Sharp Turn",
+    meaning: "There is a sharp turn in the road ahead. Slow down before entering.",
+    svg: `<svg viewBox="0 0 100 100"><polygon points="50,4 96,50 50,96 4,50" fill="#f6c700" stroke="#111" stroke-width="3"/><path d="M44 80 V50 h14" fill="none" stroke="#111" stroke-width="9" stroke-linecap="round"/><polygon points="58,38 74,50 58,62" fill="#111"/></svg>`
+  },
+  chevron: {
+    name: "Chevron",
+    meaning: "A sharp curve or change in the direction of the road is at the sign.",
+    svg: `<svg viewBox="0 0 100 100"><rect x="10" y="6" width="80" height="88" rx="6" fill="#f6c700" stroke="#111" stroke-width="3"/><polyline points="34,22 62,50 34,78" fill="none" stroke="#111" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+  },
+  reversingCurves: {
+    name: "Reversing Curves",
+    meaning: "The road ahead curves right, then left.",
+    svg: `<svg viewBox="0 0 100 100"><polygon points="50,4 96,50 50,96 4,50" fill="#f6c700" stroke="#111" stroke-width="3"/><path d="M42 80 q14 -8 2 -20 t4 -22" fill="none" stroke="#111" stroke-width="8" stroke-linecap="round"/><polygon points="42,26 56,32 46,44" fill="#111"/></svg>`
+  },
+  addedLane: {
+    name: "Added Lane",
+    meaning: "Two roadways join together. You do not need to merge.",
+    svg: `<svg viewBox="0 0 100 100"><polygon points="50,4 96,50 50,96 4,50" fill="#f6c700" stroke="#111" stroke-width="3"/><path d="M40 80 V22" fill="none" stroke="#111" stroke-width="7"/><path d="M64 80 V58 q0 -14 -10 -22 l-6 -6" fill="none" stroke="#111" stroke-width="7"/></svg>`
+  },
+  dividedHwyEnds: {
+    name: "Divided Highway Ends",
+    meaning: "The divided highway ends ahead. Two-way traffic will share the roadway — keep right.",
+    svg: `<svg viewBox="0 0 100 100"><polygon points="50,4 96,50 50,96 4,50" fill="#f6c700" stroke="#111" stroke-width="3"/><path d="M36 22 v24 q0 10 8 16" fill="none" stroke="#111" stroke-width="7" stroke-linecap="round"/><path d="M64 22 v24 q0 10 -8 16" fill="none" stroke="#111" stroke-width="7" stroke-linecap="round"/><ellipse cx="50" cy="34" rx="5" ry="14" fill="#111"/></svg>`
+  },
+  reducedSpeed: {
+    name: "Reduced Speed Limit Ahead",
+    meaning: "A lower speed limit is ahead. Prepare to slow down.",
+    svg: `<svg viewBox="0 0 100 100"><rect x="14" y="6" width="72" height="88" rx="6" fill="#f6c700" stroke="#111" stroke-width="3"/><text x="50" y="26" font-size="12" font-weight="800" fill="#111" text-anchor="middle" font-family="Arial">SPEED</text><text x="50" y="42" font-size="12" font-weight="800" fill="#111" text-anchor="middle" font-family="Arial">LIMIT</text><rect x="30" y="48" width="40" height="36" rx="4" fill="#fff" stroke="#111" stroke-width="2.5"/><text x="50" y="74" font-size="20" font-weight="800" fill="#111" text-anchor="middle" font-family="Arial">40</text><text x="50" y="93" font-size="10" font-weight="800" fill="#111" text-anchor="middle" font-family="Arial">AHEAD</text></svg>`
+  },
   transitOnly: {
     name: "Transit Only Lane",
     meaning: "Only transit vehicles (and bikes if indicated) may continue straight in this lane. You may briefly enter only to turn where permitted.",
