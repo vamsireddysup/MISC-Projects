@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oregon DMV Practice Test — Free Class C Knowledge Test Prep</title>
+<meta name="description" content="Free, ad-free Oregon DMV Class C knowledge test practice: 300+ questions, flashcards, animated scenarios, road signs, audio read-aloud and drive-test prep based on the 2026-2027 Oregon Driver Manual. Unofficial study aid.">
+<link rel="canonical" href="https://vamsireddysup.github.io/oregon-dmv-practice/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Oregon DMV Practice Test — Free Class C Prep">
+<meta property="og:description" content="300+ realistic Oregon knowledge-test questions, flashcards, animated scenarios and drive-test prep. Free, no ads. Unofficial study aid.">
+<meta property="og:url" content="https://vamsireddysup.github.io/oregon-dmv-practice/">
+<meta property="og:image" content="https://vamsireddysup.github.io/oregon-dmv-practice/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Oregon DMV Practice Test — Free Class C Prep">
+<meta name="twitter:description" content="300+ realistic Oregon knowledge-test questions, flashcards, animated scenarios and drive-test prep. Free, no ads.">
+<meta name="twitter:image" content="https://vamsireddysup.github.io/oregon-dmv-practice/og.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🚗</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <span class="logo">🌲🚗</span>
+  <h1>Oregon DMV Practice<br class="mobile-only"><small>Free Class C knowledge-test prep · 2026–2027 manual</small></h1>
+  <nav>
+    <button data-nav="home" class="active">Home</button>
+    <button data-nav="flash">Flashcards</button>
+    <button data-nav="signs">Road Signs</button>
+    <button data-nav="drive">Drive Test</button>
+    <button data-nav="stats">Stats</button>
+    <button data-nav="browse">Browse</button>
+    <button data-nav="about">About</button>
+  </nav>
+  <button id="themeToggle" title="Toggle dark / light theme" aria-label="Toggle dark or light theme">🌓</button>
+</header>
+
+<div class="banner">
+  ⚠️ Unofficial study aid — not affiliated with or approved by Oregon DMV. Answers may sometimes vary; always verify with the official <a href="https://www.oregon.gov/odot/dmv" target="_blank" rel="noopener">Oregon Driver Manual</a>.
+</div>
+
+<main>
+
+<!-- ============ HOME ============ -->
+<section id="view-home" class="view active">
+  <div class="hero">
+    <span class="road">🚗💨</span>
+    <h2>Pass your Oregon knowledge test with confidence</h2>
+    <p>Practice with realistic questions built from the 2026–2027 Oregon Driver Manual — multiple choice, true/false, fill-in-the-blank, sign identification and more. 100% free, no ads, no sign-up.</p>
+    <div class="stats">
+      <div><b id="statQ">0</b><span>questions</span></div>
+      <div><b>35</b><span>per real test</span></div>
+      <div><b>28</b><span>needed to pass</span></div>
+      <div><b id="statBest">—</b><span>your best score</span></div>
+      <div><b id="statStreak">0</b><span>day streak</span></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card clickable" id="startExam">
+      <div class="icon">📝</div>
+      <h3>Practice Test Simulator</h3>
+      <p>35 random questions, pass at 28 — just like the real DMV knowledge test. Choose instant feedback or exam mode.</p>
+      <div class="meta">Start the simulator →</div>
+    </div>
+    <div class="card clickable" id="startSignQuiz">
+      <div class="icon">🛑</div>
+      <h3>Road Sign Rapid-Fire</h3>
+      <p>Identify signs by shape, color and symbol. A big chunk of the real test is signs.</p>
+      <div class="meta">Quiz me on signs →</div>
+    </div>
+    <div class="card clickable" id="startMissed">
+      <div class="icon">🔁</div>
+      <h3>Missed Questions</h3>
+      <p>Retry every question you've gotten wrong until they stick.</p>
+      <div class="meta"><span id="missedCount">0</span> to review →</div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:2rem;">Study by topic</h2>
+  <p style="color:var(--muted);font-size:.9rem;">Your mastery bar fills as you answer each topic's questions correctly.</p>
+  <div class="grid" id="categoryGrid"></div>
+
+  <div id="examSetup" class="section-block" style="display:none;">
+    <h3>Practice Test Setup</h3>
+    <p style="font-size:.9rem;">35 random questions across all topics. You need 28 correct (80%) to pass — the same as the real Oregon Class C test.</p>
+    <div class="setup-row">
+      <button class="chip active" data-fb="instant">Show answers instantly</button>
+      <button class="chip" data-fb="end">Exam mode (results at the end)</button>
+    </div>
+    <div class="setup-row">
+      <button class="chip active" data-timer="off">No timer</button>
+      <button class="chip" data-timer="on">⏱ Timed (30 min)</button>
+    </div>
+    <div class="setup-row">
+      <button class="btn" id="beginExam">Begin test</button>
+      <button class="btn secondary" id="cancelExam">Cancel</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section id="view-quiz" class="view">
+  <div class="quiz-top">
+    <span class="qcount" id="qCount">1 / 35</span>
+    <div class="progressbar"><i id="qProgress"></i></div>
+    <span class="timer" id="qTimer" style="display:none;">30:00</span>
+    <button class="btn secondary small audioToggle" aria-label="Toggle read-aloud audio">🔊</button>
+    <button class="btn secondary small" id="quitQuiz">✕ Quit</button>
+  </div>
+  <div class="qcard" id="qCard"></div>
+  <div class="quiz-actions">
+    <button class="btn" id="submitAnswer" style="display:none;">Check answer</button>
+    <button class="btn" id="nextQuestion" style="display:none;">Next →</button>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section id="view-results" class="view">
+  <div class="qcard result-card" id="resultCard"></div>
+  <h2 style="margin-top:1.6rem;">Review your answers</h2>
+  <div id="reviewList"></div>
+  <div class="quiz-actions" style="justify-content:center;">
+    <button class="btn" id="retakeBtn">Take another test</button>
+    <button class="btn secondary" id="resultsHome">Back to home</button>
+  </div>
+</section>
+
+<!-- ============ FLASHCARDS ============ -->
+<section id="view-flash" class="view">
+  <h2>🃏 Flashcards</h2>
+  <p style="color:var(--muted);font-size:.9rem;">Tap a card (or press Space) to flip. Sort cards into “I know it” and “review again” — the review pile repeats until it's empty. Arrow keys navigate.</p>
+  <div class="setup-row" id="flashCats"></div>
+  <div class="flash-stage">
+    <div class="flashcard" id="flashcard">
+      <div class="flash-face front" id="flashFront"></div>
+      <div class="flash-face back" id="flashBack"></div>
+    </div>
+  </div>
+  <div class="flash-controls">
+    <button class="btn secondary" id="flashAgain">🔁 Review again</button>
+    <button class="btn" id="flashKnow">✅ I know it</button>
+    <button class="btn secondary audioToggle" aria-label="Toggle read-aloud audio">🔊</button>
+  </div>
+  <div class="flash-count" id="flashCount"></div>
+</section>
+
+<!-- ============ SIGNS GALLERY ============ -->
+<section id="view-signs" class="view">
+  <h2>🚸 Road Sign Gallery</h2>
+  <p style="color:var(--muted);font-size:.9rem;">Every sign below is drawn from the manual. Learn the shapes and colors: red = prohibitive, yellow = warning, orange = work zone, green = guide, blue = services, brown = recreation.</p>
+  <div class="quiz-actions"><button class="btn" id="signsQuizBtn">⚡ Rapid-fire sign quiz</button></div>
+  <div class="sign-grid" id="signGrid"></div>
+</section>
+
+<!-- ============ STATS ============ -->
+<section id="view-stats" class="view">
+  <h2>📈 Your Progress</h2>
+  <p style="color:var(--muted);font-size:.9rem;">Everything is stored on this device only. Weak questions automatically come back more often in topic quizzes and flashcards.</p>
+  <div class="grid" id="statsTiles"></div>
+  <div class="section-block">
+    <h3>Practice-test history (last 10)</h3>
+    <div id="examChart"></div>
+  </div>
+  <div class="section-block">
+    <h3>Mastery &amp; accuracy by topic</h3>
+    <div id="statsCats"></div>
+  </div>
+</section>
+
+<!-- ============ BROWSE ============ -->
+<section id="view-browse" class="view">
+  <h2>🔎 Browse all questions</h2>
+  <p style="color:var(--muted);font-size:.9rem;">Search the whole bank — tap any question to reveal its answer and explanation.</p>
+  <input type="search" class="fib-input" id="browseSearch" placeholder="Search questions, answers, explanations…" aria-label="Search questions" style="margin-top:.6rem;max-width:520px;">
+  <div class="setup-row" id="browseCats"></div>
+  <p style="color:var(--muted);font-size:.82rem;margin-top:.6rem;" id="browseCount"></p>
+  <div id="browseList"></div>
+</section>
+
+<!-- ============ DRIVE TEST PREP ============ -->
+<section id="view-drive" class="view">
+  <h2>🚙 Behind-the-Wheel Drive Test Prep</h2>
+  <p style="color:var(--muted);font-size:.9rem;">What actually happens during the Oregon drive test with an examiner, plus real-time scenario questions examiners and instructors love to ask. Based on the manual's drive-test section and commonly reported test experiences.</p>
+
+  <div class="section-block">
+    <h3>✅ Before the test — your vehicle must pass an equipment check</h3>
+    <ul>
+      <li>Vehicle starts under its own power; current registration and <b>valid proof of insurance</b> shown before the test.</li>
+      <li>Working turn signals (front and back), brake lights, and horn.</li>
+      <li>Passenger door opens and closes with the handle from inside and outside; proper, secure, reasonably clean passenger seat.</li>
+      <li>Seatbelts; tires not bald or damaged; muffler without excessive leaks or noise.</li>
+      <li>Side or rearview mirrors; nothing obstructing the view to the front, side or rear (clear the dashboard and mirror hangings).</li>
+      <li>Remove weapons, turn off the radio and cell phone, only you and the examiner in the car — no translators, family, friends or pets.</li>
+    </ul>
+  </div>
+
+  <div class="section-block">
+    <h3>🎯 What the examiner scores</h3>
+    <ul>
+      <li><b>Turning</b> — correct lane to correct lane, signaling at least 100 ft ahead, smooth low-speed turns, checking mirrors and blind spots (head movement counts — make it visible!).</li>
+      <li><b>Backing up</b> — turn your body and head to the right, look through the rear window (not just mirrors/camera), back slowly.</li>
+      <li><b>Parking</b> — parallel parking within 12 inches of the curb; hill parking with wheels turned the right way and parking brake set.</li>
+      <li><b>Lane changes</b> — signal, mirror, shoulder check, smooth move without slowing the flow.</li>
+      <li><b>Speed control</b> — obey posted limits and the basic rule; not too fast <i>and not too slow</i>; slow before curves, not in them.</li>
+      <li><b>Signaling &amp; vehicle control</b> — smooth braking and acceleration, both hands on the wheel, full stops behind stop lines and crosswalks.</li>
+      <li><b>Observation habits</b> — scanning ahead, checking cross traffic left-front-right-left, watching for pedestrians and bicycles, keeping a 2–4 second following distance (4+ over 30 mph).</li>
+    </ul>
+  </div>
+
+  <div class="section-block">
+    <h3>🗣️ Real-time scenarios the examiner may ask about (tap to reveal)</h3>
+    <details class="scenario"><summary>An emergency vehicle approaches with lights and siren while you're driving. What do you do?</summary><div class="body"><div class="scn-embed" data-scn="emergency"></div><b>Answer:</b> Immediately pull as close as safely possible to the right side of the road and stop — but never in an intersection. Stay stopped until it passes, then stay at least 500 feet behind it.</div></details>
+    <details class="scenario"><summary>You're already in the intersection when you hear the siren behind you.</summary><div class="body"><b>Answer:</b> Continue through the intersection first, then pull to the right and stop. Never stop inside the intersection.</div></details>
+    <details class="scenario"><summary>A school bus ahead turns on flashing amber lights. Then red.</summary><div class="body"><div class="scn-embed" data-scn="schoolBus"></div><b>Answer:</b> Amber means it's about to stop — prepare to stop. Flashing red means stop before reaching the bus and remain stopped until the red lights turn off. On a road with only a painted median, traffic in <i>all</i> lanes stops.</div></details>
+    <details class="scenario"><summary>The light turns yellow as you approach the intersection.</summary><div class="body"><b>Answer:</b> Stop before entering if you can do so safely. If you're too close to stop safely, continue through carefully. Slamming the brakes or accelerating to "beat it" are both scored against you.</div></details>
+    <details class="scenario"><summary>The examiner asks you to park downhill on a street with a curb.</summary><div class="body"><b>Answer:</b> Turn the front wheels <i>toward</i> the curb, set the parking brake, leave the car in park (or in gear for a manual). Uphill with a curb: wheels toward the travel lane. No curb: wheels toward the edge of the road.</div></details>
+    <details class="scenario"><summary>You approach a roundabout during the test.</summary><div class="body"><div class="scn-embed" data-scn="roundabout"></div><b>Answer:</b> Slow down, stop for pedestrians in the crosswalk, yield to traffic inside and exiting, merge counterclockwise into a gap, don't pass anyone (especially trucks), and signal right before your exit.</div></details>
+    <details class="scenario"><summary>A pedestrian steps into an unmarked crosswalk at an intersection.</summary><div class="body"><b>Answer:</b> Stop and stay stopped — every intersection has a crosswalk even without painted lines. Remain stopped while they're in your lane, the adjacent lane, or the lane you're turning into. For a white-cane or guide-dog user, wait until they've crossed the <i>entire</i> road.</div></details>
+    <details class="scenario"><summary>You need to change lanes on a multi-lane road.</summary><div class="body"><div class="scn-embed" data-scn="blindSpot"></div><b>Answer:</b> Signal at least 100 ft ahead, check rear and side mirrors, glance over your shoulder in the direction of the move to clear your blind spot, then move smoothly. Examiners specifically watch for the head check.</div></details>
+    <details class="scenario"><summary>A bicyclist is in a bike lane to your right and you want to turn right.</summary><div class="body"><b>Answer:</b> Yield to them first — never merge into the bike lane to prepare for the turn. Check your right blind spot for riders coming up beside you, signal, and turn across the lane only when clear.</div></details>
+    <details class="scenario"><summary>The examiner asks: what would you do if your brakes failed?</summary><div class="body"><b>Answer:</b> Pump the brakes to build pressure, shift to a lower gear, slowly apply the parking brake, warn others with horn or lights, and ease onto the shoulder.</div></details>
+    <details class="scenario"><summary>You come to a flashing red signal / a dark signal at a power outage.</summary><div class="body"><b>Answer:</b> Flashing red = treat as a stop sign. A completely dark signal = treat the intersection as an all-way stop.</div></details>
+    <details class="scenario"><summary>You're asked to pull over and re-enter traffic from the curb.</summary><div class="body"><b>Answer:</b> Signal, check mirrors AND look over your shoulder, and yield to all traffic before pulling out. Signal long enough to alert traffic before moving.</div></details>
+  </div>
+
+  <div class="section-block">
+    <h3>💡 Field-tested tips from Oregon test takers</h3>
+    <ul>
+      <li>Exaggerate your head movement on every mirror and blind-spot check — if the examiner can't see it, it didn't happen.</li>
+      <li>Come to <b>complete</b> stops (feel the car settle) behind the stop line or crosswalk, then creep forward if you can't see cross traffic.</li>
+      <li>If you fail the drive test, you must wait until the next business day to retest — schedule about three weeks ahead, or use a certified third-party tester.</li>
+      <li>The examiner gives directions early; if you miss a turn, don't panic or make a last-minute swerve — going around the block safely scores better than an unsafe correction.</li>
+      <li>Practice the tester's route area if possible: school zones, roundabouts, and hill parking near the DMV office are common.</li>
+      <li>Under 18? You need your permit for 6+ months and 100 supervised hours (or 50 + approved driver ed) before the test.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section id="view-about" class="view">
+  <h2>ℹ️ About this site</h2>
+  <div class="notice">
+    <b>Please read:</b> This is a free, unofficial study tool — it is <b>not supervised, approved by, or affiliated with Oregon DMV or ODOT</b>. Questions are written from the 2026–2027 Oregon Driver Manual plus publicly shared test experiences, but laws change and answers may sometimes vary from the questions you'll see at the DMV. Use this site only to review and check your knowledge before your real test, and always verify against the official <a href="https://www.oregon.gov/odot/dmv" target="_blank" rel="noopener">Oregon Driver Manual at OregonDMV.com</a>.
+  </div>
+  <div class="section-block">
+    <h3>How the real test works</h3>
+    <ul>
+      <li>The Class C knowledge test has <b>35 multiple-choice questions</b>; you must answer <b>28 correctly</b> to pass.</li>
+      <li>Take it at a DMV office on a touch-screen (several languages, optional audio) or online at DMV2U with a webcam.</li>
+      <li>No manuals, notes, or devices allowed. Cheating means failing and a 90-day wait.</li>
+      <li>Fail at an office? You may retest the same day if resources allow. Online: two tries per 24 hours, four total.</li>
+    </ul>
+  </div>
+  <div class="section-block">
+    <h3>About your data</h3>
+    <p style="font-size:.92rem;">Everything runs in your browser. Scores and progress are stored only in your device's local storage — nothing is sent anywhere. <button class="btn secondary small" id="resetProgress">Reset my progress</button></p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  🌲 Free forever · no ads · no tracking · made for Oregon learners<br>
+  Unofficial practice site. Answers may vary — verify with the official Oregon Driver Manual before your test.<br>
+  Drive safely and courteously. It could save a life! 💚
+</footer>
+
+<script src="js/signs.js"></script>
+<script src="js/scenarios.js"></script>
+<script src="js/visuals.js"></script>
+<script src="js/questions.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -9,14 +9,14 @@ misc-projects/
 ├── notebooks/
 │   ├── truth_table_generator.ipynb   # Generates truth tables for Boolean expressions
 │   └── img_to_pdf_converter.ipynb    # Converts image files to PDF format
-├── oregon-dmv-practice/              # Free Oregon DMV Class C practice-test website
+├── index.html + css/ + js/          # Free Oregon DMV Class C practice-test website
 └── README.md
 ```
 
 ## Projects
 
 ### Oregon DMV Practice Test Website
-A free, ad-free static website (`oregon-dmv-practice/`) for practicing the Oregon Class C
+A free, ad-free static website (repo root: `index.html`, `css/`, `js/`) for practicing the Oregon Class C
 knowledge test, built from the 2026–2027 Oregon Driver Manual. Unofficial study aid —
 answers may vary; always verify with the official manual.
 
@@ -38,10 +38,10 @@ answers may vary; always verify with the official manual.
 - Missed-question review and per-topic mastery tracking (localStorage only, no server)
 - Dark/light theme, animations, fully responsive — pure HTML/CSS/JS, no dependencies
 
-**Run locally:** open `oregon-dmv-practice/index.html` in a browser, or serve it:
+**Run locally:** open `index.html` in a browser, or serve it:
 
 ```bash
-cd oregon-dmv-practice && python3 -m http.server 8000
+python3 -m http.server 8000
 ```
 
 ### Truth Table Generator
