@@ -410,6 +410,44 @@ button:focus-visible, input:focus-visible, .opt:focus-visible, summary:focus-vis
   outline-offset: 2px;
 }
 
+/* Mobile: the sticky header would wrap to several rows and permanently
+   cover the screen — let it scroll away and keep the nav to one swipeable row */
+@media (max-width: 760px) {
+  header {
+    position: static;
+    padding: .55rem .8rem;
+    gap: .5rem;
+  }
+  header .logo { font-size: 1.25rem; }
+  header h1 { flex: 1 1 0; min-width: 0; font-size: .95rem; line-height: 1.25; }
+  header h1 small {
+    font-size: .62rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  header nav {
+    order: 3;
+    flex-basis: 100%;
+    margin-left: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: .35rem;
+    padding-bottom: .15rem;
+  }
+  header nav::-webkit-scrollbar { display: none; }
+  header nav button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: .8rem;
+    padding: .35rem .75rem;
+  }
+  #themeToggle { margin-left: auto; }
+  .banner { font-size: .74rem; padding: .35rem .7rem; }
+}
+
 @media (max-width: 640px) {
   header h1 { font-size: .98rem; }
   .qcard { padding: 1.1rem; }
